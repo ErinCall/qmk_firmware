@@ -10,6 +10,7 @@
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // ensure these codes start after the highest keycode defined in Quantum
   COLON_EQ,
+  BANG_EQ,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -61,7 +62,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      | Mute | VolD | VolU |      |                    |      |   7  |   8  |   9  |   +  |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      | Prev |PPause| Next |      |                    |      |   4  |   5  |   6  |   =  |      |
+ * |  !=  |      | Prev |PPause| Next |      |                    |      |   4  |   5  |   6  |   =  |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |      |      |      |                    |      |   1  |   2  |   3  |   ,  |      |
  * |------+------+------+------+------+------'                    `------+------+------+------+------+------|
@@ -75,14 +76,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                               |      |      |      |  |      |      |      |
  *                               `--------------------'  `--------------------'
  */
-// SYMBOLS
+// Control layer
 [CONT] = LAYOUT_dactyl(
        // left hand
        KC_TRNS,    KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
        KC_TRNS,  KC_TRNS,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,
-      TG(QWER),  KC_TRNS,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_TRNS,
+       BANG_EQ,  KC_TRNS,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_TRNS,
        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-       KC_PGUP,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+       KC_PGUP, TG(QWER),  KC_TRNS,  KC_TRNS,  KC_TRNS,
                                                          KC_TRNS,  KC_TRNS,
                                                                    KC_TRNS,
                                                KC_TRNS,  KC_TRNS,  KC_TRNS,
@@ -144,6 +145,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
       case COLON_EQ:
         SEND_STRING(":=");
+        return false;
+        break;
+      case BANG_EQ:
+        SEND_STRING("!=");
         return false;
         break;
     }
