@@ -13,7 +13,7 @@ Make example for this keyboard (after setting up your build environment):
 
     make fc660c:default
 
-See [build environment setup](https://docs.qmk.fm/build_environment_setup.html) then the [make instructions](https://docs.qmk.fm/make_instructions.html) for more information.
+See [build environment setup](https://docs.qmk.fm/#/getting_started_build_tools) then the [make instructions](https://docs.qmk.fm/#/getting_started_make_guide) for more information.
 
 To flash the firmware, press the reset button on the controller and run:
 
@@ -24,6 +24,17 @@ To flash the firmware, press the reset button on the controller and run:
 Thread on Geekhack: https://geekhack.org/index.php?topic=88439.0
 
 Also: https://geekhack.org/index.php?topic=88720.0
+
+
+Actuation Point adjustment
+--------------------------
+You can adjust the actuation point of the keys by setting `ACTUATION_DEPTH_ADJUSTMENT` in `config.h`.
+A value above 0 will result in a deeper, less sensitive actuation whereas a value above 1 will result in a more shallow, more sensitive actuation.
+Be careful with this setting and use small values (+/-5).
+See the `actuation-point-example` keymap of the `fc980c` keyboard for an example.
+For more information, inspect the `fc660c_i2c` branch of TMK [here](https://github.com/tmk/tmk_keyboard/tree/fc660c_i2c).
+Functionality for writing to the EEPROM has deliberately not been included to reduce the chance of people messing up their boards.
+
 
 Pinouts
 -------

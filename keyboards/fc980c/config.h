@@ -56,17 +56,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Locking resynchronize hack */
 // #define LOCKING_RESYNC_ENABLE
 
-/* key combination for command */
-#define IS_COMMAND() ( \
-    keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) \
-)
-
-
-
 /*
  * Feature disable options
  *  These options are also useful to firmware size reduction.
  */
+
+#define USE_I2C
 
 /* disable debug print */
 //#define NO_DEBUG
@@ -80,5 +75,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define NO_ACTION_ONESHOT
 //#define NO_ACTION_MACRO
 //#define NO_ACTION_FUNCTION
+
+// higher value means deeper actuation point, less sensitive
+// be careful and only make small adjustments (steps of 1 or 2).
+// too high and keys will fail to actuate. too low and keys will actuate spontaneously.
+// test all keys before further adjustment.
+// this should probably stay in the range +/-5.
+// #define ACTUATION_DEPTH_ADJUSTMENT 0
 
 #endif
