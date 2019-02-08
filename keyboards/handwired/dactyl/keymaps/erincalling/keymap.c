@@ -9,6 +9,8 @@ enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // ensure these codes start after the highest keycode defined in Quantum
   COLON_EQ,
   BANG_EQ,
+  LITE_ON,
+  LITE_OFF
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -35,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [BASE] = LAYOUT_dactyl(  // layer 0 : default
         // left hand
-    KC_ESC,     KC_1,     KC_2,     KC_3,     KC_4,      KC_5,
+    KC_ESC,    KC_F1,    KC_F2,    KC_F3,    KC_F4,     KC_F5,
     KC_TAB,  KC_QUOT,  KC_COMM,   KC_DOT,     KC_P,      KC_Y,
   COLON_EQ,     KC_A,     KC_O,     KC_E,     KC_U,      KC_I,
    KC_LSFT,  KC_SCLN,     KC_Q,     KC_J,     KC_K,      KC_X,
@@ -44,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                                MO(CONT),
                                           KC_BSPC,    KC_DEL,   KC_LGUI,
         // right hand
-                       KC_6,     KC_7,      KC_8,     KC_9,     KC_0,  KC_BSLS,
+                      KC_F6,    KC_F7,     KC_F8,    KC_F9,   KC_F10,  KC_BSLS,
                        KC_F,     KC_G,      KC_C,     KC_R,     KC_L,  KC_SLSH,
                        KC_D,     KC_H,      KC_T,     KC_N,     KC_S,  KC_MINS,
                        KC_B,     KC_M,      KC_W,     KC_V,     KC_Z,  KC_RSFT,
@@ -77,7 +79,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Control layer
 [CONT] = LAYOUT_dactyl(
        // left hand
-       KC_TRNS,    KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
+       KC_TRNS, LITE_OFF,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
        KC_TRNS,  KC_TRNS,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,
        BANG_EQ,  KC_TRNS,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_TRNS,
        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
@@ -86,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                                    KC_TRNS,
                                                KC_TRNS,  KC_TRNS,  KC_TRNS,
        // right hand
-                KC_F6,      KC_F7,   KC_F8,   KC_F9,      KC_F10,    RESET,
+                KC_F6,      KC_F7,   KC_F8,   KC_F9,     LITE_ON,    RESET,
                 KC_TRNS,     KC_7,    KC_8,    KC_9,  KC_KP_PLUS,  KC_TRNS,
                 KC_TRNS,     KC_4,    KC_5,    KC_6,      KC_EQL,  KC_TRNS,
                 KC_TRNS,     KC_1,    KC_2,    KC_3,     KC_COMM,  KC_TRNS,
@@ -149,6 +151,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SEND_STRING("!=");
         return false;
         break;
+      case LITE_ON:
+        OCR1A = 0xff;
+        OCR1B = 0x44;
+        OCR1C = 0xff;
+        return false;
+        break;
+      case LITE_OFF:
+        OCR1A = 0x00;
+        OCR1B = 0x00;
+        OCR1C = 0x00;
+        return false;
+        break;
     }
   }
 
@@ -157,7 +171,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+  DDRB |= (1 << 5 | 1 << 6 | 1 << 7);
 
+  TCCR1A |= (1 << COM1A0) | (1 << COM1A1) | // PWM on B5; "on" = LO
+            (1 << COM1B0) | (1 << COM1B1) | // PWM on B6; "on" = LO
+            (1 << COM1C0) | (1 << COM1C1) | // PWM on B7; "on" = LO
+            (1 << WGM10);                   // 8-bit PWM
+
+  TCCR1B |= (1 << WGM12) | (1 << CS10);     // Fast PWM, no prescaling
+
+  // Set backlight to purple
+  OCR1A = 0xff;
+  OCR1B = 0x44;
+  OCR1C = 0xff;
 };
 
 

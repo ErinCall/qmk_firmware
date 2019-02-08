@@ -222,6 +222,8 @@ void init_expander(void) {
 
 out:
     i2c_stop();
+
+    matrix_init_kb();
 }
 
 uint8_t matrix_scan(void)
