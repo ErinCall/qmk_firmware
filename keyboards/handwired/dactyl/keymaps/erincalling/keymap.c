@@ -16,6 +16,7 @@ enum custom_keycodes {
   BANG_EQ,
   LITE_ON,
   LITE_OFF,
+  LITE_DEF, // DEFault
   RED_UP,
   GRN_UP,
   BLU_UP,
@@ -90,7 +91,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Control layer
 [CONT] = LAYOUT_dactyl(
        // left hand
-       KC_TRNS, LITE_OFF, RED_DOWN, GRN_DOWN, BLU_DOWN,    KC_F5,
+       KC_TRNS, LITE_OFF, RED_DOWN, GRN_DOWN, BLU_DOWN, LITE_DEF,
        KC_TRNS,  KC_TRNS,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,
        BANG_EQ,  KC_TRNS,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_TRNS,
        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
@@ -170,6 +171,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         OCR1A = 0x00;
         OCR1B = 0x00;
         OCR1C = 0x00;
+        return false;
+        break;
+      case LITE_DEF:
+        red_brightness = 0xff;
+        green_brightness = 0x44;
+        blue_brightness = 0xff;
+        set_brightnesses();
         return false;
         break;
       case RED_UP:
