@@ -5,12 +5,23 @@
 #define CONT 1 // control layer
 #define QWER 2 // qwerty layer
 
+static uint8_t   red_brightness = 0xff;
+static uint8_t green_brightness = 0x44;
+static uint8_t  blue_brightness = 0xff;
+static void set_brightnesses(void);
+
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // ensure these codes start after the highest keycode defined in Quantum
   COLON_EQ,
   BANG_EQ,
   LITE_ON,
-  LITE_OFF
+  LITE_OFF,
+  RED_UP,
+  GRN_UP,
+  BLU_UP,
+  RED_DOWN,
+  GRN_DOWN,
+  BLU_DOWN
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -79,7 +90,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Control layer
 [CONT] = LAYOUT_dactyl(
        // left hand
-       KC_TRNS, LITE_OFF,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
+       KC_TRNS, LITE_OFF, RED_DOWN, GRN_DOWN, BLU_DOWN,    KC_F5,
        KC_TRNS,  KC_TRNS,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,
        BANG_EQ,  KC_TRNS,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_TRNS,
        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
@@ -88,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                                    KC_TRNS,
                                                KC_TRNS,  KC_TRNS,  KC_TRNS,
        // right hand
-                KC_F6,      KC_F7,   KC_F8,   KC_F9,     LITE_ON,    RESET,
+                KC_F6,     RED_UP,  GRN_UP,  BLU_UP,     LITE_ON,    RESET,
                 KC_TRNS,     KC_7,    KC_8,    KC_9,  KC_KP_PLUS,  KC_TRNS,
                 KC_TRNS,     KC_4,    KC_5,    KC_6,      KC_EQL,  KC_TRNS,
                 KC_TRNS,     KC_1,    KC_2,    KC_3,     KC_COMM,  KC_TRNS,
@@ -152,9 +163,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
         break;
       case LITE_ON:
-        OCR1A = 0xff;
-        OCR1B = 0x44;
-        OCR1C = 0xff;
+        set_brightnesses();
         return false;
         break;
       case LITE_OFF:
@@ -163,10 +172,46 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         OCR1C = 0x00;
         return false;
         break;
+      case RED_UP:
+        red_brightness += 0x11;
+        set_brightnesses();
+        return false;
+        break;
+      case GRN_UP:
+        green_brightness += 0x11;
+        set_brightnesses();
+        return false;
+        break;
+      case BLU_UP:
+        blue_brightness += 0x11;
+        set_brightnesses();
+        return false;
+        break;
+      case RED_DOWN:
+        red_brightness -= 0x11;
+        set_brightnesses();
+        return false;
+        break;
+      case GRN_DOWN:
+        green_brightness -= 0x11;
+        set_brightnesses();
+        return false;
+        break;
+      case BLU_DOWN:
+        blue_brightness -= 0x11;
+        set_brightnesses();
+        return false;
+        break;
     }
   }
 
   return true;
+}
+
+static void set_brightnesses(void) {
+  OCR1A = red_brightness;
+  OCR1B = green_brightness;
+  OCR1C = blue_brightness;
 }
 
 // Runs just one time when the keyboard initializes.
@@ -180,10 +225,10 @@ void matrix_init_user(void) {
 
   TCCR1B |= (1 << WGM12) | (1 << CS10);     // Fast PWM, no prescaling
 
-  // Set backlight to purple
-  OCR1A = 0xff;
-  OCR1B = 0x44;
-  OCR1C = 0xff;
+  // Backlight on
+  OCR1A = red_brightness;
+  OCR1B = green_brightness;
+  OCR1C = blue_brightness;
 };
 
 
